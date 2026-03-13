@@ -1,6 +1,44 @@
 "use client";
+import { useState } from "react";
+import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function Contact() {
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("loading");
+    setErrorMessage("");
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      message: formData.get("message"),
+    };
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to send message");
+      }
+
+      setStatus("success");
+      (e.target as HTMLFormElement).reset();
+    } catch (error: any) {
+      console.error("Form submission error:", error);
+      setStatus("error");
+      setErrorMessage(error.message || "An unexpected error occurred.");
+    }
+  };
   return (
     <section id="contact" className="py-32 relative">
       <div className="container mx-auto px-6 max-w-5xl">
@@ -29,10 +67,28 @@ export default function Contact() {
 
             <div className="bg-black/40 p-8 rounded-3xl border border-white/10">
               <h3 className="text-2xl font-bold mb-6">Send a message</h3>
-              <form action={async (formData) => {
-                 // Resend API will be connected here
-                 console.log("Form submitted. Connect Resend here via Server Actions.");
-              }} className="space-y-4">
+              
+              {status === "success" && (
+                <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 flex items-start gap-3 text-green-400">
+                  <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold">Message sent successfully!</p>
+                    <p className="text-sm opacity-90">We'll get back to you within 24 hours.</p>
+                  </div>
+                </div>
+              )}
+
+              {status === "error" && (
+                <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3 text-red-400">
+                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold">Failed to send message</p>
+                    <p className="text-sm opacity-90">{errorMessage}</p>
+                  </div>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-1">Name</label>
                   <input type="text" id="name" name="name" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors" placeholder="John Doe" />
@@ -45,8 +101,13 @@ export default function Contact() {
                   <label htmlFor="message" className="block text-sm font-medium text-gray-400 mb-1">Message</label>
                   <textarea id="message" name="message" required rows={4} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors resize-none" placeholder="Tell us about your project..."></textarea>
                 </div>
-                <button type="submit" className="w-full bg-white text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform">
-                  Send Inquiry
+                <button 
+                  type="submit" 
+                  disabled={status === "loading"}
+                  className="w-full bg-white text-black font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform disabled:opacity-70 disabled:hover:scale-100 flex justify-center items-center gap-2"
+                >
+                  {status === "loading" && <Loader2 className="w-5 h-5 animate-spin" />}
+                  {status === "loading" ? "Sending..." : "Send Inquiry"}
                 </button>
               </form>
             </div>
