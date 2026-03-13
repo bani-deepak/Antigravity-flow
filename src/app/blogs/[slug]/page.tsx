@@ -4,6 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortableText } from "next-sanity";
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 type Post = {
   _id: string;
   title: string;

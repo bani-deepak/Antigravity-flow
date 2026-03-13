@@ -2,6 +2,8 @@ import { client } from "@/sanity/client";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export const metadata: Metadata = {
   title: "Blog | BANI – Premium Design Insights",
   description: "Read our latest articles on design, development, and building a premium brand with BANI's subscription model.",
