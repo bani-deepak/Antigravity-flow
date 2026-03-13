@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   description: "BANI is a premium subscription agency offering top-tier design and development services. Build the know, like, and trust factor and reach out to us.",
 };
 
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,7 +25,9 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} font-sans antialiased bg-[#030303] text-white selection:bg-purple-500/30 selection:text-white`}
       >
+        <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
