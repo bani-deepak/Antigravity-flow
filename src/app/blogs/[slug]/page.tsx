@@ -1,4 +1,4 @@
-import { client } from "@/sanity/client";
+import { client, urlFor } from "@/sanity/client";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -90,17 +90,27 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
           </div>
 
-          {/* Hero image */}
-          {post.mainImage?.asset?.url && (
-            <div className="mb-12 rounded-3xl overflow-hidden">
-              <img src={post.mainImage.asset.url} alt={post.title} className="w-full h-64 object-cover" />
-            </div>
-          )}
-
           {/* Body */}
           {post.body && (
             <div className="prose prose-invert prose-lg prose-purple max-w-none">
-              <PortableText value={post.body} />
+              <PortableText 
+                value={post.body} 
+                components={{
+                  types: {
+                    image: ({ value }: any) => {
+                      return (
+                        <div className="my-10 rounded-3xl overflow-hidden border border-white/10">
+                          <img
+                            src={urlFor(value).url()}
+                            alt={value.alt || "Blog Image"}
+                            className="w-full h-auto"
+                          />
+                        </div>
+                      );
+                    },
+                  },
+                }}
+              />
             </div>
           )}
         </div>
