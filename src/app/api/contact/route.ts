@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: 'BANI Contact Form <onboarding@resend.dev>', // Usually onboarding@resend.dev works for testing
+      from: 'Antigravityflow mail <onboarding@resend.dev>', // Usually onboarding@resend.dev works for testing
       to: [process.env.LEADS_TO_EMAIL as string],
       replyTo: email,
       subject: `New Inquiry from ${name}`,
